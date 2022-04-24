@@ -53,8 +53,9 @@ const LoginScreen = () => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
+      
       <Image
-        source={require("../assets/logo.png")}
+        source={require("../assets/officiallogo.png")}
         resizeMode="center"
         style={styles.image}
       />
