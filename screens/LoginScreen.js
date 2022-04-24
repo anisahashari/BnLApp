@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   buttonOutline: {
     backgroundColor: "#7841e9",
     marginTop: 5,
-    borderColor: "white",
+    borderColor: "black",
     borderWidth: 2,
   },
   buttonText: {

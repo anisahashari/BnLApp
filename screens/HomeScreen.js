@@ -14,6 +14,9 @@ import Font from "../constants/font";
 import Header from "../components/Header";
 import { Ionicons } from "@expo/vector-icons";
 import { productList1, productList2, productList3 } from "../data/productlist";
+import { auth } from '../firebase'
+
+
 
 class SelectOptionScreen extends Component {
   render() {
@@ -28,7 +31,7 @@ class SelectOptionScreen extends Component {
               <TextInput placeholder="Search" style={styles.txtSearch} />
             </View>
           </View>
-          <Text style={styles.discountText}>50% Discount</Text>
+          <Text style={styles.discountText}>Categories</Text>
           <FlatList
             horizontal
             data={productList1}
@@ -57,8 +60,8 @@ class SelectOptionScreen extends Component {
               marginTop: 20,
             }}
           >
-            <Text style={styles.discountText}>New Stock</Text>
-            <Text style={styles.viewAllText}>View all</Text>
+            <Text style={styles.discountText}>Hot HOT!</Text>
+            <Text style={styles.viewAllText}>...</Text>
           </View>
           <FlatList
             horizontal
@@ -88,8 +91,8 @@ class SelectOptionScreen extends Component {
               marginTop: 20,
             }}
           >
-            <Text style={styles.discountText}>New Brands</Text>
-            <Text style={styles.viewAllText}>View all</Text>
+            <Text style={styles.discountText}>Coming Soon</Text>
+            <Text style={styles.viewAllText}>...</Text>
           </View>
 
           <FlatList
