@@ -9,6 +9,7 @@ import {
   View,
   Image,
 } from "react-native";
+import { ImageBackground } from "react-native-web";
 import { auth } from "../firebase";
 
 const LoginScreen = () => {
@@ -59,6 +60,12 @@ const LoginScreen = () => {
         resizeMode="center"
         style={styles.image}
       />
+      <ImageBackground 
+      source={require("../assets/vector.png")} 
+      resizeMode="cover" 
+      style={styles.image}>
+        
+      </ImageBackground>
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -98,6 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#E6E6FA", 
   },
   inputContainer: {
     width: "80%",
@@ -116,16 +124,16 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   button: {
-    backgroundColor: "#0782F9",
+    backgroundColor: "#7841e9",
     width: "100%",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
   },
   buttonOutline: {
-    backgroundColor: "white",
+    backgroundColor: "#7841e9",
     marginTop: 5,
-    borderColor: "#0782F9",
+    borderColor: "white",
     borderWidth: 2,
   },
   buttonText: {
@@ -134,7 +142,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   buttonOutlineText: {
-    color: "#0782F9",
+    color: "white",
     fontWeight: "700",
     fontSize: 16,
   },
