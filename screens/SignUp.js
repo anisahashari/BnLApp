@@ -188,6 +188,5 @@ const styles = StyleSheet.create({
   imagebackground: {
     width: 400,
     height: 150,
-    marginBottom: '20'
   },
 });
