@@ -1,7 +1,10 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, BackHandler} from 'react-native'
+import { ImageBackground } from "react-native-web";
 import { auth } from '../firebase'
+
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -56,6 +59,17 @@ const LoginScreen = () => {
       style={styles.container}
       behavior="padding"
     >
+        <Image
+        source={require("../assets/officiallogo.png")}
+        resizeMode="center"
+        style={styles.image}
+        />
+        <ImageBackground 
+        source={require("../assets/vector.png")} 
+         resizeMode="cover" 
+         style={styles.imagebackground}>
+        </ImageBackground>
+
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
@@ -94,6 +108,14 @@ const LoginScreen = () => {
         >
           <Text style={styles.buttonOutlineText}>Register</Text>
         </TouchableOpacity>
+       
+        <TouchableOpacity
+          onPress= {LoginScreen.js}
+          style={[styles.Backbutton]}
+        >
+          <Text>Back</Text>
+        </TouchableOpacity>
+        
       </View>
     </KeyboardAvoidingView>
   )
@@ -146,4 +168,26 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
   },
-})
+  Backbutton: {
+    color:'Black',
+    backgroundColor: 'Green',
+    marginTop: 5,
+    borderColor: '#0782F9',
+    borderWidth: 2,
+    fontWeight:700,
+    padding: 15,
+    borderRadius: 10,
+    fontSize: 16,
+  },
+
+  image: {
+    width: 400,
+    height: 150,
+    marginVertical: 10,
+  },
+  imagebackground: {
+    width: 400,
+    height: 150,
+    marginBottom: '20'
+  },
+});
