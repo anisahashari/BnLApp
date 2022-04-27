@@ -54,20 +54,18 @@ const LoginScreen = () => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      
-      <Image
+    
+      <ImageBackground 
+      source={require("../assets/vector.png")} 
+      resizeMode="cover" 
+      style={styles.imageBackground}>
+
+    <Image
         source={require("../assets/officiallogo.png")}
         resizeMode="center"
         style={styles.image}
       />
-      <ImageBackground 
-      source={require("../assets/vector.png")} 
-      resizeMode="cover" 
-      style={styles.image}>
-        
-      </ImageBackground>
-
-      <View style={styles.inputContainer}>
+        <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
           value={email}
@@ -94,6 +92,7 @@ const LoginScreen = () => {
           <Text style={styles.buttonOutlineText}>Register</Text>
         </TouchableOpacity>
       </View>
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 };
@@ -150,5 +149,9 @@ const styles = StyleSheet.create({
     width: 400,
     height: 150,
     marginVertical: 10,
+  },
+  imageBackground: {
+    width: 500,
+    height: 550,
   },
 });

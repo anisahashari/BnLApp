@@ -1,27 +1,24 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, BackHandler} from 'react-native'
-import { ImageBackground } from "react-native-web";
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { auth } from '../firebase'
 
-
-
 const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [password2, setPassword2] = useState('')
 
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        navigation.replace("Home");
-      }
-    });
+    const unsubscribe = auth.onAuthStateChanged(user => {
+        if (user) {
+            navigation.replace("Home")
+        }
+    })
 
-    return unsubscribe;
-  }, []);
+    return unsubscribe
+  }, [])
 
   const handleSignUp = () => {
     if (password == password2) {
@@ -29,98 +26,84 @@ const LoginScreen = () => {
         .createUserWithEmailAndPassword(email, password)
         .then((userCredentials) => {
           const user = userCredentials.user;
-          console.log("Registered with:", user.email);
+          console.log('Registered with:', user.email);
+
         })
         .catch((error) => alert(error.message));
     } else {
-      alert("Password does not match! please try again");
+      alert('Password does not match! please try again');
     }
   };
 
   const handleNavigationSignUp = () => {
-    navigation.replace("Home");
-  };
+    
+    navigation.replace("Home")
+  }
+
 
   const handleLogin = () => {
     auth
       .signInWithEmailAndPassword(email, password)
-      .then((userCredentials) => {
+      .then(userCredentials => {
         const user = userCredentials.user;
-        console.log("Logged in with:", user.email);
+        console.log('Logged in with:', user.email);
       })
-      .catch((error) => alert(error.message));
-  };
+      .catch(error => alert(error.message))
+  }
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior="padding"
     >
-        <Image
-        source={require("../assets/officiallogo.png")}
-        resizeMode="center"
-        style={styles.image}
-        />
-        <ImageBackground 
-        source={require("../assets/vector.png")} 
-         resizeMode="cover" 
-         style={styles.imagebackground}>
-        </ImageBackground>
+    
 
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
           value={email}
-          onChangeText={(text) => setEmail(text)}
+          onChangeText={text => setEmail(text)}
           style={styles.input}
         />
         <TextInput
           placeholder="Password"
           value={password}
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={text => setPassword(text)}
           style={styles.input}
           secureTextEntry
         />
 
         <TextInput
-          placeholder="Confirm Password"
-          value={password2}
-          onChangeText={(text) => setPassword2(text)}
-          style={styles.input}
-          secureTextEntry
-        />
+                placeholder="Confirm Password"
+                value={password2}
+                onChangeText={text => setPassword2(text)}
+                style={styles.input}
+                secureTextEntry
+                />
+
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleLogin} style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
         <TouchableOpacity
-          onPress={handleSignUp}
-          style={[styles.button, styles.buttonOutline]}
+          onPress={handleLogin}
+          style={styles.button}
         >
+        
           <Text style={styles.buttonOutlineText}>Register</Text>
         </TouchableOpacity>
-       
-        <TouchableOpacity
-          onPress= {LoginScreen.js}
-          style={[styles.Backbutton]}
-        >
-          <Text>Back</Text>
-        </TouchableOpacity>
-        
       </View>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
-export default LoginScreen;
+export default LoginScreen
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#E6E6FA", 
   },
   inputContainer: {
     width: "80%",
@@ -139,16 +122,16 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   button: {
-    backgroundColor: "#0782F9",
+    backgroundColor: "#7841e9",
     width: "100%",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
   },
   buttonOutline: {
-    backgroundColor: "white",
+    backgroundColor: "#7841e9",
     marginTop: 5,
-    borderColor: "#0782F9",
+    borderColor: "black",
     borderWidth: 2,
   },
   buttonText: {
@@ -157,29 +140,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   buttonOutlineText: {
-    color: "#0782F9",
+    color: "white",
     fontWeight: "700",
     fontSize: 16,
   },
-  Backbutton: {
-    color:'Black',
-    backgroundColor: 'Green',
-    marginTop: 5,
-    borderColor: '#0782F9',
-    borderWidth: 2,
-    fontWeight:700,
-    padding: 15,
-    borderRadius: 10,
-    fontSize: 16,
-  },
-
   image: {
     width: 400,
     height: 150,
     marginVertical: 10,
   },
-  imagebackground: {
-    width: 400,
-    height: 150,
-  },
-});
+})
