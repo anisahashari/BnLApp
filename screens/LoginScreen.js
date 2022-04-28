@@ -54,11 +54,7 @@ const LoginScreen = () => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-    
-      <ImageBackground 
-      source={require("../assets/vector.png")} 
-      resizeMode="cover" 
-      style={styles.imageBackground}>
+  
 
     <Image
         source={require("../assets/officiallogo.png")}
@@ -92,7 +88,7 @@ const LoginScreen = () => {
           <Text style={styles.buttonOutlineText}>Register</Text>
         </TouchableOpacity>
       </View>
-      </ImageBackground>
+    
     </KeyboardAvoidingView>
   );
 };
@@ -150,8 +146,5 @@ const styles = StyleSheet.create({
     height: 150,
     marginVertical: 10,
   },
-  imageBackground: {
-    width: 500,
-    height: 550,
-  },
+  
 });
