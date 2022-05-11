@@ -1,191 +1,271 @@
-import React, { Component } from "react";
+import React from 'react';
 import {
-  StyleSheet,
-  Text,
+  Dimensions,
+  SafeAreaView,
   View,
-  TouchableOpacity,
-  ImageBackground,
-  ScrollView,
+  Image,
   TextInput,
+  Text,
+  TouchableOpacity,
   FlatList,
-} from "react-native";
-import Color from "../constants/color";
-import Font from "../constants/font";
-import Header from "../components/Header";
-import { Ionicons } from "@expo/vector-icons";
-import { productList1, productList2, productList3 } from "../data/productlist";
-import { auth } from '../firebase'
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
+import COLORS from '../constants/colors';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// import Icon2 from 'react-native-vector-icons/FontAwesome';
+import pets from '../constants/pets';
+const {height} = Dimensions.get('window');
+const petCategories = [
+  {name: 'BOOK', icon: 'book'},
+  {name: 'CLOTHES', icon: 'tshirt-crew'},
+  {name: 'MONEY', icon: 'cash'},
+  {name: 'OTHERS', icon: 'blur'},
+];
+import {useNavigation} from '@react-navigation/core';
+import {auth} from '../firebase';
+// import CalendarPicker from 'react-native-calendar-picker';
 
-class SelectOptionScreen extends Component {
-  render() {
+const HomeScreen = ({navigation}) => {
+  const Card = ({pet, navigation}) => {
     return (
-      <View style={styles.container}>
-        <Header />
-        <ScrollView>
-          <View style={{ padding: 20 }}>
-            <Text style={styles.txt1}>What are you looking for?</Text>
-            <View style={styles.searchContainer}>
-              <Ionicons name="ios-search" color={Color.primary} size={25} />
-              <TextInput placeholder="Search" style={styles.txtSearch} />
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={() => navigation.navigate('DetailsScreen', pet)}>
+        <View style={style.cardContainer}>
+          {/* Render the card image */}
+          <View style={style.cardImageContainer}>
+            <Image
+              source={pet.image}
+              style={{
+                width: '100%',
+                height: '100%',
+                resizeMode: 'contain',
+              }}
+            />
+          </View>
+
+          {/* Render all the card details here */}
+          <View style={style.cardDetailsContainer}>
+            {/* Name and gender icon */}
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text
+                style={{fontWeight: 'bold', color: COLORS.dark, fontSize: 20}}>
+                {pet?.name}
+              </Text>
+              <Icon name="assistant" size={22} color={COLORS.grey} />
+            </View>
+
+            {/* Render the age and type */}
+            <Text style={{fontSize: 12, marginTop: 5, color: COLORS.dark}}>
+              {pet?.type}
+            </Text>
+            <Text style={{fontSize: 10, marginTop: 5, color: COLORS.grey}}>
+              {pet?.age}
+            </Text>
+
+            {/* Render distance and the icon */}
+            <View style={{marginTop: 5, flexDirection: 'row'}}>
+              <Icon name="chat" color={COLORS.primary} size={18} />
+              <Text style={{fontSize: 12, color: COLORS.grey, marginLeft: 5}}>
+                BORROW NOW!
+              </Text>
             </View>
           </View>
-          <Text style={styles.discountText}>Categories</Text>
-          <FlatList
-            horizontal
-            data={productList1}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  this.props.navigation.navigate("ProductDetails");
-                }}
-              >
-                <ImageBackground
-                  source={{ uri: item.image }}
-                  style={styles.itemContainer}
-                >
-                  <View style={styles.itemTextBackground}>
-                    <Text style={styles.itemText}>{item.name}</Text>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
-            )}
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 20,
-            }}
-          >
-            <Text style={styles.discountText}>Hot HOT!</Text>
-            <Text style={styles.viewAllText}>...</Text>
-          </View>
-          <FlatList
-            horizontal
-            data={productList2}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  this.props.navigation.navigate("ProductDetails");
-                }}
-              >
-                <ImageBackground
-                  source={{ uri: item.image }}
-                  style={styles.itemContainer}
-                >
-                  <View style={styles.itemTextBackground}>
-                    <Text style={styles.itemText}>{item.name}</Text>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
-            )}
-          />
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: 20,
-            }}
-          >
-            <Text style={styles.discountText}>Coming Soon</Text>
-            <Text style={styles.viewAllText}>...</Text>
-          </View>
-
-          <FlatList
-            horizontal
-            data={productList3}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  this.props.navigation.navigate("ProductDetails");
-                }}
-              >
-                <ImageBackground
-                  source={{ uri: item.image }}
-                  style={styles.item3Container}
-                >
-                  <View style={styles.itemTextBackground}>
-                    <Text style={styles.itemText}>{item.name}</Text>
-                  </View>
-                </ImageBackground>
-              </TouchableOpacity>
-            )}
-          />
-        </ScrollView>
-      </View>
+        </View>
+      </TouchableOpacity>
     );
-  }
-}
+  };
+  const handleSignOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        navigation.replace('Login');
+      })
+      .catch(error => alert(error.message));
+  };
+  const [selectedCategoryIndex, setSeletedCategoryIndex] = React.useState(0);
+  const [filteredPets, setFilteredPets] = React.useState([]);
+ 
+    const fliterPet = index => {
+      const currentPets = pets.filter(
+        item => item?.pet?.toUpperCase() == petCategories[index].name,
+      )[0]?.pets;
+      setFilteredPets(currentPets);
+    };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Color.white,
-  },
-  txt1: {
-    color: Color.black,
-    fontFamily: Font.FONT_SEMI_BOLD,
-    fontSize: 20,
-  },
-  txtSearch: {
-    color: Color.primary,
-    fontFamily: Font.FONT_REGULAR,
-    fontSize: 20,
-    marginStart: 10,
-    flexGrow: 1,
-  },
-  searchContainer: {
-    backgroundColor: Color.searchBackground,
-    marginTop: 10,
-    borderRadius: 30,
-    paddingVertical: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-  },
-  discountText: {
-    color: Color.black,
-    fontFamily: Font.FONT_REGULAR,
-    fontSize: 18,
-    paddingHorizontal: 20,
-  },
-  viewAllText: {
-    color: Color.primary,
-    fontFamily: Font.FONT_REGULAR,
-    fontSize: 16,
-    paddingEnd: 20,
-  },
-  itemContainer: {
-    borderRadius: 10,
-    overflow: "hidden",
-    backgroundColor: Color.backgroundColor,
-    margin: 10,
-    height: 150,
-    width: 200,
-  },
-  itemTextBackground: {
-    backgroundColor: "rgba(0,0,0,0.3)",
-    height: "100%",
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  itemText: {
-    color: Color.white,
-    fontFamily: Font.FONT_REGULAR,
-    fontSize: 20,
-  },
-  item3Container: {
-    borderRadius: 10,
-    overflow: "hidden",
-    backgroundColor: Color.backgroundColor,
-    margin: 10,
-    height: 150,
-    width: 150,
-  },
-});
+    React.useEffect(() => {
+      fliterPet(0);
+    }, []);
 
-export default SelectOptionScreen;
+    return (
+      <SafeAreaView style={{flex: 1, color: COLORS.white}}>
+        <View style={style.header}>
+          <Icon
+            name="sort-variant"
+            size={28}
+            // onPress={navigation.toggleDrawer}
+            onPress={() => navigation.navigate("DrawerNavigator")}
+          />
+          <Text
+            style={{color: COLORS.primary, fontWeight: 'bold', fontSize: 16}}>
+            BnL Application
+          </Text>
+          <Image
+            // onPress={() => navigation.navigate("ProfileScreen")}
+            source={require('../assets/person.jpg')}
+            style={{height: 30, width: 30, borderRadius: 25}}
+          />
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={style.mainContainer}>
+            {/* Render the search inputs and icons */}
+            <View style={style.searchInputContainer}>
+              <Icon name="magnify" size={24} color={COLORS.grey} />
+              <TextInput
+                placeholderTextColor={COLORS.grey}
+                placeholder="Search item to borrow"
+                style={{flex: 1}}
+              />
+              <Icon name="sort-ascending" size={24} color={COLORS.grey} />
+            </View>
+            
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginTop: 20,
+              }}>
+              {petCategories.map((item, index) => (
+                <View key={'pet' + index} style={{alignItems: 'center'}}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSeletedCategoryIndex(index);
+                      fliterPet(index);
+                    }}
+                    style={[
+                      style.categoryBtn,
+                      {
+                        backgroundColor:
+                          selectedCategoryIndex == index
+                            ? COLORS.primary
+                            : COLORS.white,
+                      },
+                    ]}>
+                    <Icon
+                      name={item.icon}
+                      size={30}
+                      color={
+                        selectedCategoryIndex == index
+                          ? COLORS.white
+                          : COLORS.primary
+                      }
+                    />
+                  </TouchableOpacity>
+                  <Text style={style.categoryBtnName}>{item.name}</Text>
+                </View>
+              ))}
+            </View>
+
+            {/* Render the cards with flatlist */}
+            <View style={{marginTop: 20}}>
+              <FlatList
+                showsVerticalScrollIndicator={false}
+                data={filteredPets}
+                renderItem={({item}) => (
+                  <Card pet={item} navigation={navigation} />
+                )}
+              />
+            </View>
+          </View>
+          <View style={style.container}>
+            {/* <Text>Email: {auth.currentUser?.email}</Text> */}
+            <TouchableOpacity onPress={handleSignOut} style={style.button}>
+              <Text style={style.buttonText}>Sign out</Text>
+            </TouchableOpacity>
+          </View>
+          
+        </ScrollView>
+      </SafeAreaView>
+    );
+  };
+
+  const style = StyleSheet.create({
+    button: {
+      backgroundColor: COLORS.primary,
+      width: '40%',
+      padding: 15,
+      borderRadius: 10,
+      marginLeft: "30%",
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 10,
+    },
+    buttonText: {
+      color: 'white',
+      fontWeight: '700',
+      fontSize: 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    header: {
+      padding: 20,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    mainContainer: {
+      flex: 1,
+      backgroundColor: COLORS.light,
+      borderTopLeftRadius: 40,
+      borderTopRightRadius: 40,
+      marginTop: 20,
+      paddingHorizontal: 20,
+      paddingVertical: 40,
+      minHeight: height,
+    },
+    searchInputContainer: {
+      height: 50,
+      backgroundColor: COLORS.white,
+      borderRadius: 7,
+      paddingHorizontal: 20,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    categoryBtn: {
+      height: 50,
+      width: 50,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 10,
+    },
+    categoryBtnName: {
+      color: COLORS.dark,
+      fontSize: 10,
+      marginTop: 5,
+      fontWeight: 'bold',
+    },
+    cardContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    cardDetailsContainer: {
+      height: 120,
+      backgroundColor: COLORS.white,
+      flex: 1,
+      borderTopRightRadius: 10,
+      borderBottomRightRadius: 10,
+      padding: 20,
+      justifyContent: 'center',
+    },
+    cardImageContainer: {
+      height: 150,
+      width: 140,
+      backgroundColor: COLORS.background,
+      borderRadius: 20,
+    },
+  });
+export default HomeScreen;
