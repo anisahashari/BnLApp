@@ -11,6 +11,7 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
+
 import COLORS from '../constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 // import Icon2 from 'react-native-vector-icons/FontAwesome';
@@ -23,6 +24,7 @@ const petCategories = [
   {name: 'OTHERS', icon: 'blur'},
 ];
 import {useNavigation} from '@react-navigation/core';
+
 import {auth} from '../firebase';
 // import CalendarPicker from 'react-native-calendar-picker';
 
@@ -56,7 +58,6 @@ const HomeScreen = ({navigation}) => {
               </Text>
               <Icon name="assistant" size={22} color={COLORS.grey} />
             </View>
-
             {/* Render the age and type */}
             <Text style={{fontSize: 12, marginTop: 5, color: COLORS.dark}}>
               {pet?.type}
@@ -77,6 +78,7 @@ const HomeScreen = ({navigation}) => {
       </TouchableOpacity>
     );
   };
+  
   const handleSignOut = () => {
     auth
       .signOut()
@@ -106,17 +108,26 @@ const HomeScreen = ({navigation}) => {
             name="sort-variant"
             size={28}
             // onPress={navigation.toggleDrawer}
-            onPress={() => navigation.navigate("DrawerNavigator")}
+            // onPress={() => navigation.navigate("../screens/UserProfile")}
           />
+          
           <Text
             style={{color: COLORS.primary, fontWeight: 'bold', fontSize: 16}}>
             BnL Application
           </Text>
-          <Image
-            // onPress={() => navigation.navigate("ProfileScreen")}
+          {/* <Image
+            onPress={() => navigation.navigate("UserProfile")}
             source={require('../assets/person.jpg')}
             style={{height: 30, width: 30, borderRadius: 25}}
+          /> */}
+          <TouchableOpacity onPress={() => navigation.navigate("UserProfile")}>
+          <Image
+            source={require('../assets/person.jpg')}
+            style={{ width: 38, height: 38 }}
+            imageStyle={{ borderRadius: 25 }}
           />
+
+        </TouchableOpacity>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={style.mainContainer}>
@@ -128,9 +139,8 @@ const HomeScreen = ({navigation}) => {
                 placeholder="Search item to borrow"
                 style={{flex: 1}}
               />
-              <Icon name="sort-ascending" size={24} color={COLORS.grey} />
+              <Icon name="sort-ascending" size={24} color={COLORS.grey}/>
             </View>
-            
             <View
               style={{
                 flexDirection: 'row',
@@ -167,7 +177,6 @@ const HomeScreen = ({navigation}) => {
                 </View>
               ))}
             </View>
-
             {/* Render the cards with flatlist */}
             <View style={{marginTop: 20}}>
               <FlatList
@@ -178,14 +187,23 @@ const HomeScreen = ({navigation}) => {
                 )}
               />
             </View>
+
           </View>
           <View style={style.container}>
             {/* <Text>Email: {auth.currentUser?.email}</Text> */}
             <TouchableOpacity onPress={handleSignOut} style={style.button}>
               <Text style={style.buttonText}>Sign out</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Feedback")} style={style.button}>
+              <Text style={style.buttonText}>Feedback</Text>
+            </TouchableOpacity>
+            {/* <Icon
+              name="arrow-left"
+              size={28}
+              color={COLORS.dark}
+              onPress={() => navigation.navigate("Feedback")}
+            /> */}
           </View>
-          
         </ScrollView>
       </SafeAreaView>
     );

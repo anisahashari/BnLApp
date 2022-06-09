@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { auth } from "../firebase";
+import { auth,firestore } from "../firebase";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -33,7 +33,20 @@ const LoginScreen = () => {
         .createUserWithEmailAndPassword(email, password)
         .then((userCredentials) => {
           const user = userCredentials.user;
-          console.log("Registered with:", user.email);
+          console.log('Registered with:', user.email);
+
+          // updateProfile(auth.currentUser, {
+          //   displayName: username,
+          //   photoURL: '/pawprint.jfif',
+          // });
+
+          firestore.collection('user').doc(user.uid).set({
+            username: '',
+            name: '',
+            phone: '',
+            gender: '',
+            age: '',
+          });
         })
         .catch((error) => alert(error.message));
     } else {

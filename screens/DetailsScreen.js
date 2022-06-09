@@ -102,7 +102,7 @@ const DetailsScreen = ({navigation, route}) => {
         {/* Render footer */}
         <View style={style.footer}>
           <View style={style.iconCon}>
-            <Icon name="heart-outline" size={22} color={COLORS.white} />
+            <Icon name="plus" size={22} color={COLORS.white} />
           </View>
           <View style={style.btn}>
             <Text style={{color: COLORS.white, fontWeight: 'bold'}}>

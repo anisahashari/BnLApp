@@ -43,6 +43,7 @@ const pets = [
     ],
   },
   {
+    
     pet: 'money',
     pets: [
       {
@@ -77,6 +78,25 @@ const pets = [
         image: require('../assets/bunny2.png'),
         type: 'Nikon',
         age: '1 years old',
+      },
+    ],
+  },
+  {
+    pet: 'calendar',
+    pets: [
+      {
+        id: '1',
+        name: '> RM100',
+        image: require('../assets/bird1.png'),
+        type: '100 and above',
+        age: 'Time limit : 3 years',
+      },
+      {
+        id: '2',
+        name: '> RM1',
+        image: require('../assets/bird2.png'),
+        type: '1 and above',
+        age: 'Time limit : 10 years',
       },
     ],
   },

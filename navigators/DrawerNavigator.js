@@ -1,173 +1,265 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/core";
 import {
-  createDrawerNavigator,
-  useDrawerProgress,
-  DrawerContentScrollView,
-  DrawerItemList,
-  useDrawerStatus,
-} from '@react-navigation/drawer';
-import {View, Image, Text, StatusBar} from 'react-native';
-import Animated from 'react-native-reanimated';
-import HomeScreen from '../screens/HomeScreen';
-import COLORS from '../constants/colors';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+  Share,
+  View,
+  SafeAreaView,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  TouchableOpacity,
+} from "react-native";
+import {
+  Avatar,
+  Title,
+  Caption,
+  Text,
+  TouchableRipple,
+} from "react-native-paper";
+import COLORS from "../../consts/colors";
+import Icon2 from "react-native-vector-icons/MaterialIcons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon3 from "react-native-vector-icons/FontAwesome5";
+import { Header } from "react-native-elements";
+import {
+  auth,
+  firestore,
+  getStorage,
+  ref,
+  getDownloadURL,
+} from "../../../firebase";
 
-const Drawer = createDrawerNavigator();
+// import Share from 'react-native-share';
 
-const DrawerScreenContainer = ({children}) => {
-  const isDrawerOpen = useDrawerStatus();
-  const progress = useDrawerProgress();
-  const scale = Animated.interpolateNode(progress, {
-    inputRange: [0, 1],
-    outputRange: [1, 0.8],
-  });
-  const borderRadius = Animated.interpolateNode(progress, {
-    inputRange: [0, 1],
-    outputRange: [0, 25],
-  });
+// import files from "../../assets/filesBase64";
+
+const UserProfile = () => {
+  const navigation = useNavigation();
+  const displayName = auth.currentUser.displayName;
+  const email = auth.currentUser.email;
+  const photo = auth.currentUser.photoURL;
+
+  const [userData, setUserData] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const wait = (timeout) => {
+    return new Promise((resolve) => setTimeout(resolve, timeout));
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(1000).then(() => setRefreshing(false));
+  }, []);
+
+  const getUser = async () => {
+    const userRef = firestore.collection("users").doc(auth.currentUser.uid);
+    const doc = await userRef.get();
+    if (!doc.exists) {
+      console.log("No such document!");
+    } else {
+      setUserData(doc.data());
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
-    <Animated.View
-      style={{
-        flex: 1,
-        backgroundColor: COLORS.white,
-        borderRadius,
-        transform: [{scale}],
-        overflow: 'hidden',
-      }}>
-      <StatusBar
-        backgroundColor={isDrawerOpen == 'open' ? COLORS.primary : COLORS.white}
-        barStyle="dark-content"
-      />
-      {children}
-    </Animated.View>
-  );
-};
-
-const CustomDrawerContent = props => {
-  return (
-    <DrawerContentScrollView
-      style={{
-        paddingVertical: 30,
-      }}>
-      <View
-        style={{
-          marginLeft: 20,
-          marginVertical: 40,
-        }}>
-        <Image
-          source={require('../assets/person.jpg')}
-          style={{height: 70, width: 70, borderRadius: 20}}
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: COLORS.background, paddingTop: 20 }}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <Header
+          backgroundColor="#e8a468"
+          placement="center"
+          leftComponent={
+            <TouchableOpacity onPress={() => navigation.navigate("Homepage")}>
+              <Icon2 name="arrow-back-ios" size={23} color={"#fff"} />
+            </TouchableOpacity>
+          }
+          centerComponent={{
+            text: "MY PROFILE",
+            style: { color: "#fff", fontWeight: "bold", fontSize: 15 },
+          }}
+          rightComponent={
+            <TouchableOpacity onPress={() => navigation.navigate("EditUserProfile")}>
+              <Icon2 name="edit" size={23} color={"#fff"} />
+            </TouchableOpacity>
+          }
         />
-        <Text
-          style={{
-            color: COLORS.white,
-            fontWeight: 'bold',
-            fontSize: 13,
-            marginTop: 10,
-          }}>
-          JANE GARY
-        </Text>
-      </View>
+        <View>
+          <View style={styles.userInfoSection}>
+            <View
+              style={{
+                flexDirection: "row",
+                marginTop: 25,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Avatar.Image source={{ uri: photo }} size={90} />
+            </View>
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
+              <Title
+                style={[
+                  styles.title,
+                  {
+                    marginTop: 15,
+                    marginBottom: 5,
+                    color: "#665444",
+                  },
+                ]}
+              >
+                {userData.name}
+              </Title>
+              <Caption style={styles.caption}>@{displayName}</Caption>
+            </View>
+          </View>
+        </View>
 
-      <DrawerItemList {...props} />
-    </DrawerContentScrollView>
-  );
-};
-const DrawerNavigator = () => {
-  return (
-    <Drawer.Navigator
-      screenOptions={{
-        headerShown: false,
-        drawerType: 'slide',
-        drawerStyle: {
-          width: 200,
-          backgroundColor: COLORS.primary,
-        },
-        overlayColor: null,
-        drawerLabelStyle: {
-          fontWeight: 'bold',
-        },
-        drawerActiveTintColor: COLORS.white,
-        drawerInactiveTintColor: COLORS.secondary,
-        drawerItemStyle: {backgroundColor: null},
-        sceneContainerStyle: {
-          backgroundColor: COLORS.primary,
-        },
-      }}
-      drawerContent={props => <CustomDrawerContent {...props} />}>
-      <Drawer.Screen
-        name="Home"
-        options={{
-          title: 'ADOPTION',
-          drawerIcon: ({color}) => (
-            <Icon name="paw" size={25} style={{marginRight: -20, color}} />
-          ),
-        }}>
-        {props => (
-          <DrawerScreenContainer>
-            <HomeScreen {...props} />
-          </DrawerScreenContainer>
-        )}
-      </Drawer.Screen>
+        <View style={styles.userInfoSection}>
+          <View style={styles.row}>
+            <View style={styles.textBox}>
+              <Icon name="email" color="#665444" size={20} />
+              <Text style={{ color: "#777777", marginLeft: 20 }}>{email}</Text>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.textBox}>
+              <Icon name="phone" color="#665444" size={20} />
+              <Text style={{ color: "#777777", marginLeft: 20 }}>
+                {userData.phone ? userData.phone : "Phone number not set"}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.textBox}>
+              <Icon name="human-male-female" color="#665444" size={20} />
+              <Text style={{ color: "#777777", marginLeft: 20 }}>
+                {userData.gender ? userData.gender : "Gender not set"}
+              </Text>
+            </View>
+          </View>
+        </View>
 
-      <Drawer.Screen
-        name="DONATION"
-        options={{
-          drawerIcon: ({color}) => (
-            <Icon name="gift" size={25} style={{marginRight: -20, color}} />
-          ),
-        }}>
-        {props => (
-          <DrawerScreenContainer>
-            <HomeScreen {...props} />
-          </DrawerScreenContainer>
-        )}
-      </Drawer.Screen>
-
-      <Drawer.Screen
-        name="ADD PET"
-        options={{
-          drawerIcon: ({color}) => (
-            <Icon name="plus-box" size={25} style={{marginRight: -20, color}} />
-          ),
-        }}>
-        {props => (
-          <DrawerScreenContainer>
-            <HomeScreen {...props} />
-          </DrawerScreenContainer>
-        )}
-      </Drawer.Screen>
-
-      <Drawer.Screen
-        name="FAVOURITES"
-        options={{
-          drawerIcon: ({color}) => (
-            <Icon name="heart" size={25} style={{marginRight: -20, color}} />
-          ),
-        }}>
-        {props => (
-          <DrawerScreenContainer>
-            <HomeScreen {...props} />
-          </DrawerScreenContainer>
-        )}
-      </Drawer.Screen>
-
-      <Drawer.Screen
-        name="PROFILE"
-        options={{
-          drawerIcon: ({color}) => (
-            <Icon name="account" size={25} style={{marginRight: -20, color}} />
-          ),
-        }}>
-        {props => (
-          <DrawerScreenContainer>
-            <HomeScreen {...props} />
-          </DrawerScreenContainer>
-        )}
-      </Drawer.Screen>
-    </Drawer.Navigator>
+        <View style={styles.menuWrapper}>
+          <View
+            style={{
+              borderBottomColor: "#e6e4e3",
+              borderBottomWidth: 1,
+            }}
+          />
+          <TouchableRipple
+            style={{ borderBottomColor: "#e6e4e3", borderBottomWidth: 1 }}
+            onPress={() => navigation.navigate("UserChangePassword")}
+          >
+            <View style={styles.menuItem}>
+              <Icon name="form-textbox-password" color="#fa9c4b" size={25} />
+              <Text style={styles.menuItemText}>Change Password</Text>
+              <Icon2
+                name="keyboard-arrow-right"
+                color="grey"
+                size={25}
+                style={{ paddingLeft: 150 }}
+              />
+            </View>
+          </TouchableRipple>
+          <TouchableRipple
+            style={{ borderBottomColor: "#e6e4e3", borderBottomWidth: 1 }}
+            onPress={() => navigation.navigate("CatPage")}
+          >
+            <View style={styles.menuItem}>
+              <Icon name="cat" color="#fa9c4b" size={25} />
+              <Text style={styles.menuItemText}>Your Cat</Text>
+              <Icon2
+                name="keyboard-arrow-right"
+                color="grey"
+                size={25}
+                style={{ paddingLeft: 217 }}
+              />
+            </View>
+          </TouchableRipple>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
-export default DrawerNavigator;
+export default UserProfile;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 30,
+  },
+  userInfoSection: {
+    paddingHorizontal: 30,
+    marginBottom: 35,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  caption: {
+    fontSize: 14,
+    lineHeight: 14,
+    fontWeight: "500",
+  },
+  row: {
+    flexDirection: "row",
+    marginBottom: 13,
+  },
+  infoBoxWrapper: {
+    borderBottomColor: "#dddddd",
+    borderBottomWidth: 1,
+    borderTopColor: "#dddddd",
+    borderTopWidth: 1,
+    flexDirection: "row",
+    height: 100,
+  },
+  infoBox: {
+    width: "50%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  menuWrapper: {
+    marginTop: 10,
+  },
+  menuItem: {
+    flexDirection: "row",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+  },
+  menuItemText: {
+    color: "#777777",
+    marginLeft: 20,
+    fontWeight: "600",
+    fontSize: 16,
+    lineHeight: 26,
+  },
+  header: {
+    marginTop: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 20,
+    justifyContent: "space-between",
+  },
+  textBox: {
+    height: 40,
+    alignItems: "center",
+    paddingLeft: 20,
+    flex: 1,
+    backgroundColor: COLORS.secondary,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    flexDirection: "row",
+  },
+});

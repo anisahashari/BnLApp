@@ -12,7 +12,7 @@ import Font from "../constants/font";
 import Header from "../components/Header";
 import { Ionicons } from "@expo/vector-icons";
 
-class ProductDetialsScreen extends Component {
+class ProductDetailsScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -118,4 +118,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductDetialsScreen;
+export default ProductDetailsScreen;
