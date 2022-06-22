@@ -37,7 +37,7 @@ import files from '../assets/filesBase64';
 const UserProfile = () => {
   const navigation = useNavigation();
   const email = auth.currentUser.email;
-  // const photo = auth.currentUser.photoURL;
+  const photo = auth.currentUser.photoURL;
 
   const [userData, setUserData] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -158,6 +158,7 @@ const UserProfile = () => {
             }}
           />
         </View>
+        
         <View >
           <Icon
             name="arrow-left"

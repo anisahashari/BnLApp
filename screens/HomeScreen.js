@@ -14,7 +14,6 @@ import {
 
 import COLORS from '../constants/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-// import Icon2 from 'react-native-vector-icons/FontAwesome';
 import pets from '../constants/pets';
 const {height} = Dimensions.get('window');
 const petCategories = [
@@ -26,9 +25,9 @@ const petCategories = [
 import {useNavigation} from '@react-navigation/core';
 
 import {auth} from '../firebase';
-// import CalendarPicker from 'react-native-calendar-picker';
 
 const HomeScreen = ({navigation}) => {
+  const photo = auth.currentUser.photoURL;
   const Card = ({pet, navigation}) => {
     return (
       <TouchableOpacity
@@ -44,6 +43,7 @@ const HomeScreen = ({navigation}) => {
                 height: '100%',
                 resizeMode: 'contain',
               }}
+
             />
           </View>
 
@@ -104,12 +104,7 @@ const HomeScreen = ({navigation}) => {
     return (
       <SafeAreaView style={{flex: 1, color: COLORS.white}}>
         <View style={style.header}>
-          <Icon
-            name="sort-variant"
-            size={28}
-            // onPress={navigation.toggleDrawer}
-            // onPress={() => navigation.navigate("../screens/UserProfile")}
-          />
+        {/* <Icon name="sort-variant" size={28} onPress={navigation.toggleDrawer} /> */}
           
           <Text
             style={{color: COLORS.primary, fontWeight: 'bold', fontSize: 16}}>
@@ -122,7 +117,7 @@ const HomeScreen = ({navigation}) => {
           /> */}
           <TouchableOpacity onPress={() => navigation.navigate("UserProfile")}>
           <Image
-            source={require('../assets/person.jpg')}
+            source={ { uri: photo }}
             style={{ width: 38, height: 38 }}
             imageStyle={{ borderRadius: 25 }}
           />
@@ -196,6 +191,9 @@ const HomeScreen = ({navigation}) => {
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigation.navigate("Feedback")} style={style.button}>
               <Text style={style.buttonText}>Feedback</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Calendar")} style={style.button}>
+              <Text style={style.buttonText}>Calendar</Text>
             </TouchableOpacity>
             {/* <Icon
               name="arrow-left"

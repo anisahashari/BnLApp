@@ -1,439 +1,143 @@
-import React, {useEffect, useState} from 'react';
-import {useNavigation} from '@react-navigation/core';
+import React, { useEffect, useState } from "react";
 import {
-  Share,
-  View,
   SafeAreaView,
   StyleSheet,
-  Picker,
-  Alert,
-  ScrollView,
-  TouchableOpacity,
-  ImageBackground,
-} from 'react-native';
-import {
-  Avatar,
-  Title,
-  Caption,
+  View,
   Text,
-  TextInput,
-  TouchableRipple,
-} from 'react-native-paper';
-import COLORS from '../constants/color';
-// import Icon2 from "react-native-vector-icons/MaterialIcons";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+  Image,
+  FlatList,
+} from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
 // import Icon3 from "react-native-vector-icons/FontAwesome5";
-// import * as ImagePicker from "expo-image-picker";
+import COLORS from "../constants/colors";
+// import { PrimaryButton } from "../../consts/button";
+import { firestore } from "../firebase";
 
-// import { Header } from "react-native-elements";
-// import firebaseErrors from "../firebaseErrors";
-import uuid from 'uuid';
-import {
-  auth,
-  firestore,
-  firebase,
-  updateProfile,
-  getStorage,
-  ref,
-  getDownloadURL,
-  uploadBytes,
-} from '../firebase';
+const FeedbackHistory = ({ navigation }) => {
+  const [feedback, setFeedback] = useState([]);
 
-const FeedbackHistory = () => {
-  const navigation = useNavigation();
+  const feedbackRef = firestore.collection("feedback");
 
-  const [feedbackData, setFeedbackData] = useState('');
-  // const [displayName, setDisplayName] = useState(auth.currentUser.displayName);
-
-  const getFeedback = async () => {
-    const feedbackRef = firestore.collection('feedback').doc(auth.currentUser.uid);
-    const doc = await feedbackRef.get();
-    if (!doc.exists) {
-      console.log('No such document!');
-    } else {
-      setFeedbackData(doc.data());
-    }
-  };
-
-//   const pickImage = async () => {
-//     let pickerResult = await ImagePicker.launchImageLibraryAsync({
-//       mediaTypes: ImagePicker.MediaTypeOptions.All,
-//       allowsEditing: true,
-//       aspect: [1, 1],
-//       quality: 1,
-//     });
-
-//     console.log({pickerResult});
-
-//     if (!pickerResult.cancelled) {
-//       setImage(pickerResult);
-//     }
-
-//     handleImagePicked(pickerResult);
-//   };
-
-//   const handleImagePicked = async pickerResult => {
-//     try {
-//       // this.setState({ uploading: true });
-//       setImage({uploading: true});
-
-//       if (!pickerResult.cancelled) {
-//         const uploadUrl = await uploadImageAsync(pickerResult.uri);
-//         // this.setState({ image: uploadUrl });
-//         setImage(uploadUrl);
-//       }
-//     } catch (e) {
-//       console.log(e);
-//       alert('Upload failed, sorry :(');
-//     }
-//   };
-
-//   async function uploadImageAsync(uri) {
-//     const blob = await new Promise((resolve, reject) => {
-//       const xhr = new XMLHttpRequest();
-//       xhr.onload = function () {
-//         resolve(xhr.response);
-//       };
-//       xhr.onerror = function (e) {
-// //         console.log(e);
-// //         reject(new TypeError('Network request failed'));
-// //       };
-// //       xhr.responseType = 'blob';
-// //       xhr.open('GET', uri, true);
-// //       xhr.send(null);
-//     });
-
-//     const fileRef = ref(getStorage(), uuid.v4());
-//     const result = await uploadBytes(fileRef, blob);
-
-//     // blob.close();
-
-//     return await getDownloadURL(fileRef);
-//   }
-
-//   const handleUpdate = async () => {
-
-//     firestore
-//       .collection('feedback')
-//       .doc(auth.currentUser.uid)
-//       .update({
-//         firstname: feedbackData.firstname,
-//         lastname: feedbackData.lastname,
-//         comment: feedbackData.comment,
-//       })
-//       .then(() => {
-//         console.log('Feedback Updated!');
-//         Alert.alert(
-//           'Feedback Updated!',
-//           'Your Feedback has been submitted successfully!',
-//         );
-//       })
-//       .catch(error => {
-//         alert(firebaseErrors[error.code] || error.message);
-//       });
-
-//     navigation.replace('Feedback');
-//   };
-const handleAdd = async () => {
-    firestore.collection("feedback").add({
-        firstname: feedbackData.firstname,
-        lastname: feedbackData.lastname,
-        comment: feedbackData.comment,
-        user: auth.currentUser.uid,
+  useEffect(async () => {
+    feedbackRef.onSnapshot((querySnapshot) => {
+      const feedbackArray = [];
+      querySnapshot.forEach((doc) => {
+        const { firstname,lastname,user,comment } = doc.data();
+        feedbackArray.push({
+          id: doc.id,
+          firstname,
+          lastname,
+          user,
+          comment,
+        });
+      });
+      setFeedback(feedbackArray);
     });
-
-    navigation.replace("Feedback");
-  };
-  useEffect(() => {
-    getFeedback();
   }, []);
 
-  return (
-    <ScrollView stickyHeaderIndices={[0]}>
-      <SafeAreaView style={{flex: 1, backgroundColor: '#FCFCFC'}}>
-        {/* <Header
-          backgroundColor="#e8a468"
-          placement="center"
-          leftComponent={
-            <TouchableOpacity
-              onPress={() => navigation.navigate("UserProfile")}
-            >
-              <Icon2 name="arrow-back-ios" size={23} color={"#fff"} />
-            </TouchableOpacity>
-          }
-          centerComponent={{
-            text: "EDIT PROFILE",
-            style: { color: "#fff", fontWeight: "bold", fontSize: 15 },
+  const CartCard = ({ item }) => {
+    return (
+      <View style={style.cartCard}>
+        {/* <Image source={{}} style={{ height: 80, width: 80 }} /> */}
+        <View
+          style={{
+            height: 100,
+            marginLeft: 10,
+            paddingVertical: 20,
+            flex: 1,
           }}
-        /> */}
-         <View >
+        >
+          
+          <Text style={{ fontWeight: "bold", fontSize: 16, marginTop: -10 }}>
+            Feedback ID : {item.firstname}
+          </Text>
+          <Text style={{ fontSize: 15, color: COLORS.grey, marginTop: 10 }}>
+            {item.start} - {item.end}
+          </Text>
+          {/* <Text style={{ fontSize: 17, fontWeight: "bold", marginTop: 9 }}>
+            Room Type
+          </Text> */}
+        </View>
+        <View style={{ marginRight: 20, alignItems: "center" }}>
           <Icon
-            name="arrow-left"
-            size={28}
-            color={COLORS.dark}
-            onPress={navigation.goBack}
-            style={{
-              flexDirection: 'row',
-              marginTop: 25,
-              alignItems: 'left',
-              justifyContent: 'left',
-            }}
+            name="arrow-forward"
+            size={23}
+            color={"#4b5142"}
+            onPress={() =>
+              navigation.navigate("ViewFeedback", { paramkey: item.id })
+            }
           />
         </View>
-        <View style={{justifyContent: 'center', alignItems: 'center'}}>
-          <Title
-            style={{
-              color: COLORS.primary, 
-              fontWeight: 'bold', 
-              fontSize: 25, 
-              marginTop: 15,
-              marginBottom: 5,}} >
-            F e e d b a c k
-          </Title></View>
-        <View>
-          <View style={styles.userInfoSection}>
-            <View
-              style={{
-                flexDirection: 'row',
-                marginTop: 25,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <TouchableOpacity onPress={() => pickImage()}>
-                <View
-                  style={{
-                    height: 100,
-                    width: 100,
-                    borderRadius: 15,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}>
-                  {/* <ImageBackground
-                    source={{uri: image}}
-                    style={{height: 95, width: 95}}
-                    imageStyle={{borderRadius: 50}}>
-                    <View
-                      style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Icon
-                        name="camera"
-                        size={33}
-                        color="#cfc0f0"
-                        style={{
-                          opacity: 0.7,
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      />
-                    </View>
-                  </ImageBackground> */}
-                </View>
-                {/* <Avatar.Image
-                  source={image ? { uri: image } : { uri: photo }}
-                  size={90}
-                /> */}
-              </TouchableOpacity>
-            </View>
-          </View>
+      </View>
+    );
+  };
+  return (
+    <SafeAreaView
+      style={{
+        backgroundColor: COLORS,
+        flex: 1,
+        paddingTop: 20,
+      }}
+    >
+      <View style={style.header}>
+          <Icon
+            name="arrow-back"
+            size={28}
+            color={COLORS}
+            onPress={navigation.goBack}
+          />
         </View>
+      <View>
+        <Text
+          style={{
+            fontWeight: "bold",
+            color: COLORS,
+            marginLeft: 23,
+            fontSize: 17,
+            marginBottom: 5,
+          }}
+        >
+          All Feedback From User
+        </Text>
 
-        <View style={styles.userInfoSection}>
-          <Text
-            style={{
-              fontWeight: 'bold',
-              color: '#665444',
-              marginLeft: 5,
-              marginBottom: 5,
-            }}>
-            Firstname
-          </Text>
-          <View style={styles.row}>
-            <View style={styles.textBox}>
-              <Icon name="account" color="#665444" size={20} />
-              <TextInput
-                style={styles.editTextBox}
-                borderColor="transparent"
-                placeholder="First Name"
-                placeholderTextColor="#666666"
-                placeholderTextSize="20"
-                autoCorrect={false}
-                value={feedbackData ? feedbackData.firstname : ''}
-                onChangeText={text =>
-                  setFeedbackData({...feedbackData, firstname: text})
-                }></TextInput>
-            </View>
-          </View>
-
-          <Text
-            style={{
-              fontWeight: 'bold',
-              color: '#665444',
-              marginLeft: 5,
-              marginBottom: 5,
-            }}>
-            LastName
-          </Text>
-          <View style={styles.row}>
-            <View style={styles.textBox}>
-              <Icon name="account-check" color="#665444" size={20} />
-              <TextInput
-                style={styles.editTextBox}
-                borderColor="transparent"
-                placeholder="Last Name"
-                placeholderTextColor="#666666"
-                placeholderTextSize="20"
-                autoCorrect={false}
-                value={feedbackData ? feedbackData.lastname : ''}
-                onChangeText={text =>
-                  setFeedbackData({...feedbackData, lastname: text})
-                }></TextInput>
-            </View>
-          </View>
-
-          <Text
-            style={{
-              fontWeight: 'bold',
-              color: '#665444',
-              marginLeft: 5,
-              marginBottom: 5,
-            }}>
-            Comment
-          </Text>
-          <View style={styles.row}>
-            <View style={styles.textBox}>
-              <Icon name="comment" color="#665444" size={20} />
-              <TextInput
-                style={styles.editTextBox}
-                borderColor="transparent"
-                placeholder="A feedback is appreciated!"
-                placeholderTextColor="#666666"
-                placeholderTextSize="20"
-                autoCorrect={false}
-                value={feedbackData ? feedbackData.comment : ''}
-                onChangeText={text =>
-                  setFeedbackData({...feedbackData, comment: text})
-                }></TextInput>
-            </View>
-          </View>
-          
-          <Text
-            style={{
-              fontWeight: 'bold',
-              color: '#665444',
-              marginLeft: 5,
-              marginBottom: 5,
-            }}></Text>
-          
-        </View>
-        <View style={styles.button}>
-          <Text style={styles.buttonText} onPress={handleAdd}>
-            Save Feedback
-          </Text>
-        </View>
-       
-      </SafeAreaView>
-    </ScrollView>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 80 }}
+          data={feedback}
+          renderItem={({ item }) => <CartCard item={item} />}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
-
-export default FeedbackHistory;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 30,
-  },
-  userInfoSection: {
-    paddingHorizontal: 30,
-    marginBottom: 35,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  caption: {
-    fontSize: 14,
-    lineHeight: 14,
-    fontWeight: '500',
-  },
-  row: {
-    flexDirection: 'row',
-    marginBottom: 13,
-  },
-  infoBoxWrapper: {
-    borderBottomColor: '#dddddd',
-    borderBottomWidth: 1,
-    borderTopColor: '#dddddd',
-    borderTopWidth: 1,
-    flexDirection: 'row',
-    height: 100,
-  },
-  infoBox: {
-    width: '50%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  menuWrapper: {
-    marginTop: 10,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-  },
-  menuItemText: {
-    color: '#7841e9',
-    marginLeft: 20,
-    fontWeight: '600',
-    fontSize: 16,
-    lineHeight: 26,
-  },
+const style = StyleSheet.create({
   header: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingVertical: 20,
+    flexDirection: "row",
+    alignItems: "center",
     marginHorizontal: 20,
-    justifyContent: 'space-between',
   },
-  textBox: {
-    height: 40,
-    alignItems: 'center',
-    paddingLeft: 20,
-    flex: 1,
-    backgroundColor: '#cfc0f0',
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
-    flexDirection: 'row',
-  },
-  editTextBox: {
-    height: 40,
-    alignItems: 'center',
-    paddingLeft: 20,
-    flex: 1,
-    backgroundColor: COLORS.secondary,
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
-    flexDirection: 'row',
-    fontSize: 15,
-  },
-  button: {
-    height: 52,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.primary,
-    marginHorizontal: 20,
+  cartCard: {
+    height: 80,
+    elevation: 10,
     borderRadius: 10,
+    backgroundColor: COLORS.white,
+    marginVertical: 10,
+    marginHorizontal: 20,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center",
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: '700',
-    fontSize: 16,
+  actionBtn: {
+    width: 80,
+    height: 30,
+    backgroundColor: COLORS.primary,
+    borderRadius: 30,
+    paddingHorizontal: 5,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignContent: "center",
   },
 });
+
+export default FeedbackHistory;

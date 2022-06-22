@@ -23,7 +23,7 @@ import COLORS from '../constants/color';
 // import Icon2 from "react-native-vector-icons/MaterialIcons";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 // import Icon3 from "react-native-vector-icons/FontAwesome5";
-// import * as ImagePicker from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";
 
 // import { Header } from "react-native-elements";
 // import firebaseErrors from "../firebaseErrors";
@@ -116,8 +116,8 @@ const EditUserProfile = () => {
 
   const handleUpdate = async () => {
     updateProfile(auth.currentUser, {
-      //displayName: displayName,
-      //  photoURL: image,
+      displayName: displayName,
+       photoURL: image,
     });
 
     firestore
@@ -210,7 +210,7 @@ const EditUserProfile = () => {
                     alignItems: 'center',
                   }}>
                   <ImageBackground
-                    source={{uri: image}}
+                    source={image ? { uri: image } : { uri: photo }}
                     style={{height: 95, width: 95}}
                     imageStyle={{borderRadius: 50}}>
                     <View
